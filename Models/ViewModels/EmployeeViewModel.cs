@@ -18,11 +18,11 @@ namespace test.Models.ViewModels
 
         [Required]
         [StringLength(100, MinimumLength = 3)]
-        // [RegularExpression(@"^[A - Za - z]+[\s][A - Za - z]+$", ErrorMessage = "Enter characters and single white space")]
+        [RegularExpression(@"^[A-Za-z]+[\s][A-Za-z]+$", ErrorMessage = "In Format FirstName LastName")]
         public string Name { get; set; }
 
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "yyyy’-‘MM’-‘dd’T’HH’:’mm’:’ss", ApplyFormatInEditMode = true)]
         public DateTime DOB { get; set; }
         public Gender Gender { get; set; }
         public decimal Salary { get; set; }
