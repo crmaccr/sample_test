@@ -36,23 +36,6 @@ namespace test.Controllers
             return selectList;
         }
 
-        // GET: Employees/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
-
-            return View(employee);
-        }
 
         // GET: Employees/Create
         public async Task<ActionResult> Create()
