@@ -1,4 +1,4 @@
-@model test.Models.Employee
+@model test.Models.ViewModels.EmployeeViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -33,6 +33,19 @@
                 <label asp-for="Salary" class="control-label"></label>
                 <input asp-for="Salary" class="form-control" />
                 <span asp-validation-for="Salary" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QualificationVm.CourseId" class="control-label"> </label>
+                <select asp-for="QualificationVm.CourseId" asp-items="ViewBag.Qualifications" class="form-select">
+                    <option value=""> --- Please select a qualification</option>
+                </select>
+                <span asp-validation-for="QualificationVm.CourseId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="QualificationVm.Marks" class="control-label"> </label>
+                <input asp-for="QualificationVm.Marks" class="form-control" />
+                <span asp-validation-for="QualificationVm.Marks" class="text-danger"></span>
             </div>
 
 

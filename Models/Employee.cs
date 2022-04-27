@@ -14,6 +14,10 @@ namespace test.Models
     }
     public class Employee
     {
+        public Employee()
+        {
+            EmployeeQualifications = new List<EmployeeQualification>();
+        }
         [Column("Employee_Id")]
         public int Id { get; set; }
         [Required]
@@ -27,16 +31,15 @@ namespace test.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DOB { get; set; }
         public Gender Gender { get; set; }
-        
+
         [Column(TypeName = "decimal(18,2)")]
         public decimal Salary { get; set; }
-
-
         public string Entry_By { get; set; }
 
         [DataType(DataType.Date)]
         [Column("Entry_date", TypeName = "Date")]
         public DateTime EntryDate { get; set; } = DateTime.Now;
+        [Display(Name = "Employee Qualifications")]
 
         public List<EmployeeQualification> EmployeeQualifications { get; set; }
 

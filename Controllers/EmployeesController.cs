@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using test.Data;
 using test.Models;
+using test.Models.ViewModels;
 
 namespace test.Controllers
 {
@@ -26,6 +27,13 @@ namespace test.Controllers
         public async Task<IActionResult> Index()
         {
             return View(await _context.Employees.ToListAsync());
+        }
+
+        public async Task<SelectList> CreateQualificationDropDown(object selected = null)
+        {
+            var allQualifications = await _context.Qualification.ToListAsync();
+            var selectList = new SelectList(allQualifications, "Id", "Name", selected);
+            return selectList;
         }
 
         // GET: Employees/Details/5
@@ -47,8 +55,10 @@ namespace test.Controllers
         }
 
         // GET: Employees/Create
-        public IActionResult Create()
+        public async Task<ActionResult> Create()
         {
+            var selectList = await CreateQualificationDropDown(null);
+            ViewBag.Qualifications = selectList;
             return View();
         }
 
@@ -57,22 +67,40 @@ namespace test.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,DOB,Gender,Entry_By,EntryDate")] Employee employee)
+        public async Task<IActionResult> Create(EmployeeViewModel employeeVm)
         {
-            if (employee.DOB > DateTime.Now)
+            if (employeeVm.DOB > DateTime.Now)
             {
                 _logger.LogError("Future date is provided");
                 ModelState.AddModelError("DOB", "Date Of Birth cannot be in future");
-                return View(employee);
+                var dropdownOptions = await CreateQualificationDropDown(employeeVm.QualificationVm.CourseId);
+                ViewBag.Qualifications = dropdownOptions;
+                return View(employeeVm);
             }
             if (ModelState.IsValid)
             {
+                var model = new Employee()
+                {
+                    Name = employeeVm.Name,
+                    Gender = employeeVm.Gender,
+                    DOB = employeeVm.DOB,
+                    Salary = employeeVm.Salary,
+                    EmployeeQualifications = new List<EmployeeQualification>(){
+                        new EmployeeQualification{
+                        QualificationId= employeeVm.QualificationVm.CourseId,
+                        Marks = employeeVm.QualificationVm.Marks
+                        }
+                    }
+                };
 
-                _context.Add(employee);
+                _context.Employees.Add(model);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(employee);
+            _logger.LogCritical("Some validation error maybe");
+            var selectList = await CreateQualificationDropDown(employeeVm.QualificationVm.CourseId);
+            ViewBag.Qualifications = selectList;
+            return View(employeeVm);
         }
 
         // GET: Employees/Edit/5
