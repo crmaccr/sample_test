@@ -7,9 +7,9 @@ namespace test.Models
 {
     public enum Gender
     {
-        Male = 1,
-        Female = 2,
-        Third = 3
+        [Display(Name = "Male")] Male = 1,
+        [Display(Name = "Female")] Female = 2,
+        [Display(Name = "Third")] Third = 3
 
     }
     public class Employee
@@ -19,12 +19,19 @@ namespace test.Models
         [Required]
         [StringLength(100, MinimumLength = 3)]
         [Column("Emp_Name")]
+        // [RegularExpression(@"^[A - Za - z]+[\s][A - Za - z]+$", ErrorMessage = "Enter characters and single white space")]
         public string Name { get; set; }
 
         [DataType(DataType.Date)]
         [Column(TypeName = "Date")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DOB { get; set; }
         public Gender Gender { get; set; }
+        
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Salary { get; set; }
+
+
         public string Entry_By { get; set; }
 
         [DataType(DataType.Date)]
