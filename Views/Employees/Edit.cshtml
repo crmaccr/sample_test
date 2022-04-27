@@ -1,4 +1,4 @@
-@model test.Models.Employee
+@model test.Models.ViewModels.EmployeeViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -19,27 +19,39 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Gender" class="control-label"></label>
+                <select asp-for="Gender" class="form-control" asp-items="Html.GetEnumSelectList<Gender>()">
+                    <option value=""> -- Please select a gender ---</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="DOB" class="control-label"></label>
                 <input asp-for="DOB" class="form-control" />
                 <span asp-validation-for="DOB" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Gender" class="control-label"></label>
-                <select asp-for="Gender" class="form-control"></select>
-                <span asp-validation-for="Gender" class="text-danger"></span>
+                <label asp-for="Salary" class="control-label"></label>
+                <input asp-for="Salary" class="form-control" />
+                <span asp-validation-for="Salary" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Entry_By" class="control-label"></label>
-                <input asp-for="Entry_By" class="form-control" />
-                <span asp-validation-for="Entry_By" class="text-danger"></span>
+                <label asp-for="QualificationVm.CourseId" class="control-label"> </label>
+                <select asp-for="QualificationVm.CourseId" asp-items="ViewBag.Qualifications" class="form-select">
+                    <option value=""> --- Please select a qualification</option>
+                </select>
+                <span asp-validation-for="QualificationVm.CourseId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="EntryDate" class="control-label"></label>
-                <input asp-for="EntryDate" class="form-control" />
-                <span asp-validation-for="EntryDate" class="text-danger"></span>
+                <label asp-for="QualificationVm.Marks" class="control-label"> </label>
+                <input asp-for="QualificationVm.Marks" class="form-control" />
+                <span asp-validation-for="QualificationVm.Marks" class="text-danger"></span>
             </div>
+
+
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -50,5 +62,5 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

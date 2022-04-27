@@ -79,6 +79,8 @@ namespace test.Controllers
             }
             if (ModelState.IsValid)
             {
+
+                // ViewModel to Model Conversion
                 var model = new Employee()
                 {
                     Name = employeeVm.Name,
@@ -111,12 +113,35 @@ namespace test.Controllers
                 return NotFound();
             }
 
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await _context.Employees
+            .Include(e => e.EmployeeQualifications)
+                .ThenInclude(eq => eq.Qualification)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id);
             if (employee == null)
             {
                 return NotFound();
             }
-            return View(employee);
+            // converting model to viewModel
+            var vm = new EmployeeViewModel()
+            {
+                Id = employee.Id,
+                Name = employee.Name,
+                DOB = employee.DOB,
+                Gender = employee.Gender,
+                Salary = employee.Salary,
+                Entry_By = employee.Entry_By,
+                EntryDate = employee.EntryDate,
+                QualificationVm = new QualificationViewModel()
+                {
+                    CourseId = employee.EmployeeQualifications[0].QualificationId,
+                    Marks = employee.EmployeeQualifications[0].Marks
+
+                }
+            };
+            var selectList = await CreateQualificationDropDown(vm.QualificationVm.CourseId);
+            ViewBag.Qualifications = selectList;
+            return View(vm);
         }
 
         // POST: Employees/Edit/5
@@ -124,34 +149,45 @@ namespace test.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,DOB,Gender,Entry_By,EntryDate")] Employee employee)
+        public async Task<IActionResult> Edit(int id, EmployeeViewModel employeeVm)
         {
-            if (id != employee.Id)
+            if (id != employeeVm.Id)
             {
                 return NotFound();
             }
+            if (employeeVm.DOB > DateTime.Now)
+            {
+                _logger.LogError("Future date is provided");
+                ModelState.AddModelError("DOB", "Date Of Birth cannot be in future");
+                var dropdownOptions = await CreateQualificationDropDown(employeeVm.QualificationVm.CourseId);
+                ViewBag.Qualifications = dropdownOptions;
+                return View(employeeVm);
+            }
 
+            var employee = await _context.Employees
+            .Include(e => e.EmployeeQualifications)
+            .ThenInclude(eq => eq.Qualification)
+            .FirstOrDefaultAsync(e => e.Id == id);
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(employee);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EmployeeExists(employee.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                // model to viewModel Conversion
+
+                employee.Name = employeeVm.Name;
+                employee.Gender = employeeVm.Gender;
+                employee.DOB = employeeVm.DOB;
+                employee.EmployeeQualifications = new List<EmployeeQualification>(){
+                        new EmployeeQualification{
+                        QualificationId= employeeVm.QualificationVm.CourseId,
+                        Marks = employeeVm.QualificationVm.Marks
+                        }
+                    };
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(employee);
+
+            var selectoptions = await CreateQualificationDropDown(employeeVm.QualificationVm.CourseId);
+            ViewBag.Qualifications = selectoptions;
+            return View(employeeVm);
         }
 
         // GET: Employees/Delete/5

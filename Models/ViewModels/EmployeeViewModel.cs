@@ -10,14 +10,11 @@ namespace test.Models.ViewModels
         public int CourseId { get; set; }
         public int Marks { get; set; }
 
-
-
-
     }
     public class EmployeeViewModel
     {
 
-        // public int Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [StringLength(100, MinimumLength = 3)]
@@ -25,7 +22,7 @@ namespace test.Models.ViewModels
         public string Name { get; set; }
 
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DOB { get; set; }
         public Gender Gender { get; set; }
         public decimal Salary { get; set; }
